@@ -118,12 +118,9 @@ public class ScanActivity extends AppCompatActivity {
                 final Intent intent = new Intent(mContext, BleActivity.class);
                 intent.putExtra(Constants.EXTRAS_DEVICE_NAME, device.getName());
                 intent.putExtra(Constants.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-                //if (mScanning) {
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
                 mScanning = false;
-                //}
                 startActivity(intent);
-                //finish();
             }
         });
     }
@@ -184,13 +181,13 @@ public class ScanActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_ID_PERMISSIONS) {
             Map<String, Integer> perms = new HashMap<>();
-            // Initialize the map with both permissions
+            // Initialize the map with permissions
             perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
             // Fill with actual results from user
             if (grantResults.length > 0) {
                 for (int i = 0; i < permissions.length; i++)
                     perms.put(permissions[i], grantResults[i]);
-                // Check for both permissions
+                // Check for permissions
                 if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     Log.d("TAG", "Location Access permission granted");
                     checkAndRequestPermissions();
@@ -199,7 +196,7 @@ public class ScanActivity extends AppCompatActivity {
                 } else {
                     Log.d("TAG", "Some permissions are not granted ask again ");
                     //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
-//                        // shouldShowRequestPermissionRationale will return true
+                    // shouldShowRequestPermissionRationale will return true
                     //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                         showDialogOK("Location Access Permission required for this app",
@@ -264,7 +261,6 @@ public class ScanActivity extends AppCompatActivity {
         // Initializes list view adapter.
         mLeDeviceListAdapter = new LeDeviceListAdapter();
         lst_devices.setAdapter(mLeDeviceListAdapter);
-        //setListAdapter(mLeDeviceListAdapter);
         scanLeDevice(true);
     }
 
@@ -293,7 +289,6 @@ public class ScanActivity extends AppCompatActivity {
                 public void run() {
                     mScanning = false;
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    //invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
 
@@ -303,7 +298,6 @@ public class ScanActivity extends AppCompatActivity {
             mScanning = false;
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
         }
-        //invalidateOptionsMenu();
         checkScanning();
     }
 

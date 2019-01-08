@@ -109,7 +109,6 @@ public class BleActivity extends AppCompatActivity {
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             Toast.makeText(mContext, getString(R.string.msg_bluetooth_not_available), Toast.LENGTH_LONG).show();
-            //finish();
             return;
         }
         if (!mBluetoothAdapter.isEnabled()) {           //check phone bluetooth is on or off
@@ -117,7 +116,7 @@ public class BleActivity extends AppCompatActivity {
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         } else {                                        //device bluetooth is not connected
             tvConnect.setText(getString(R.string.disconnected));
-            showAlertConnectRemote(getString(R.string.msg_connect_device));
+            showAlertConnectDevice(getString(R.string.msg_connect_device));
         }
     }
 
@@ -226,7 +225,6 @@ public class BleActivity extends AppCompatActivity {
         return intentFilter;
     }
 
-    // on change of bars write char
     private void sendMessage(String message) {
         Log.d(getString(R.string.Sent), message);
         try {
@@ -258,7 +256,6 @@ public class BleActivity extends AppCompatActivity {
                     // Bluetooth is now enabled, so set up a chat session
                 } else {
                     // User did not enable Bluetooth or an error occured
-                    //Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
                     showAlertBluetooth();
                 }
                 return;
@@ -302,7 +299,7 @@ public class BleActivity extends AppCompatActivity {
         }
     }
 
-    private void showAlertConnectRemote(String msg) {
+    private void showAlertConnectDevice(String msg) {
         try {
             alertDialog = new AlertDialog.Builder(mContext)
                     //set icon
@@ -317,7 +314,7 @@ public class BleActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //set what would happen when positive button is clicked
                             tvConnect.setText(getString(R.string.title_connecting));
-                            mBluetoothLeService.connect(macAddress);                                    // connect with bluetooth device again
+                            mBluetoothLeService.connect(macAddress);                                // connect with bluetooth device again
                         }
                     })
                     .setNegativeButton(getString(R.string.close_device), new DialogInterface.OnClickListener() {
