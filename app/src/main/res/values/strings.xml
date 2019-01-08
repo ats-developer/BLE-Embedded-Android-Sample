@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Ble Embedded Sample</string>
+
+    <!--BLE-->
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+
+    <string name="unknown_device">Unknown device</string>
+    <string name="unknown_characteristic">Unknown characteristic</string>
+    <string name="unknown_service">Unknown service</string>
+
+    <!-- Menu items -->
+    <string name="menu_scan">Scan</string>
+    <string name="menu_stop">Stop</string>
+
+    <!--  Bluetooth Chat -->
+    <string name="enterData">Enter data</string>
+    <string name="send">Send</string>
+    <string name="unableInitialize">Unable to initialize Bluetooth</string>
+    <string name="bt_not_enable">Bluetooth not enabled</string>
+    <string name="bt_enable_msg">Bluetooth is not enabled,\nPlease enable bluetooth</string>
+    <string name="not_connected">You are not connected to a device</string>
+    <string name="title_connecting">Connecting...</string>
+    <string name="connectResult">Connect request result : </string>
+    <string name="title_device_not_work">Device disconnected</string>
+    <string name="msg_bluetooth_not_available">Bluetooth is not available</string>
+    <string name="msg_connect_device">Connect Device again</string>
+    <string name="connect">Connect</string>
+    <string name="close_device">Close Device</string>
+    <string name="OK">OK</string>
+    <string name="Received">Received : </string>
+    <string name="Sent">Sent : </string>
+</resources>

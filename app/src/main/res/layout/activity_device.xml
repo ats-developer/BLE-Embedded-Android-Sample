@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:keepScreenOn="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvConnect"
+        style="@style/textViewStyle"
+        android:text="@string/title_connecting" />
+
+    <EditText
+        android:id="@+id/etCommand"
+        style="@style/edittextStyle"
+        android:hint="@string/enterData" />
+
+    <Button
+        android:id="@+id/btnSend"
+        style="@style/buttonStyle"
+        android:text="@string/send" />
+
+    <TextView
+        android:id="@+id/tvSendCommand"
+        style="@style/textViewCommandStyle" />
+
+    <TextView
+        android:id="@+id/tvReceivedData"
+        style="@style/textViewCommandStyle" />
+</LinearLayout>

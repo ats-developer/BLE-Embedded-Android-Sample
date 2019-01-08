@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.atharvasystem.bleembeddedsample">
+
+    //If you want your app to initiate device discovery or manipulate Bluetooth settings, you must
+    also declare the BLUETOOTH_ADMIN permission.
+    //Note: If you use the BLUETOOTH_ADMIN permission, then you must also have the BLUETOOTH
+    permission.
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    //If you want to declare that your app is available to BLE-capable devices only, include the
+    following in your app's manifest
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    //Location permission is required for BLE scanned device list, otherwise ble scan is not show
+    available devices
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".ScanActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".BleActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
+        <service
+            android:name=".Service.BluetoothLeService"
+            android:enabled="true"
+            android:stopWithTask="false" />
+    </application>
+
+</manifest>
