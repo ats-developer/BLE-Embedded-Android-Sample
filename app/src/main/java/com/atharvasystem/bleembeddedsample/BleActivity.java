@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,20 +28,14 @@ import com.atharvasystem.bleembeddedsample.Service.BluetoothLeService;
 import com.atharvasystem.bleembeddedsample.Utility.Constants;
 import com.atharvasystem.bleembeddedsample.Utility.SampleGattAttributes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class BleActivity extends AppCompatActivity {
 
     private Context mContext;
-    TextView tvConnect, tvSendCommand, tvReceivedData;
-    EditText etCommand;
-    Button btnSend;
-
-    // Local Bluetooth adapter
-    private BluetoothAdapter mBluetoothAdapter = null;
+    private TextView tvConnect, tvSendCommand, tvReceivedData;
+    private EditText etCommand;
+    private Button btnSend;
 
     private BluetoothLeService mBluetoothLeService;
     private boolean mConnected = false;
@@ -48,12 +43,12 @@ public class BleActivity extends AppCompatActivity {
     private BluetoothGattCharacteristic characteristicRX;
     private final static String TAG = BleActivity.class.getSimpleName();
 
-    private final String LIST_NAME = "NAME";
-    private final String LIST_UUID = "UUID";
     private String macAddress;
 
     private AlertDialog alertDialog, alertDialogBluetooth;
     private static final int REQUEST_ENABLE_BT = 2;
+    private String strReceived = "";
+    private InputMethodManager imm;
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -89,7 +84,7 @@ public class BleActivity extends AppCompatActivity {
                 mConnected = true;
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                enableBloutooth();      //check bluetooth is connected or not
+                enableBluetooth();      //check bluetooth is connected or not
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 try {
@@ -98,14 +93,13 @@ public class BleActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(mBluetoothLeService.EXTRA_DATA));                 //print received data string
+                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));                  //print received data string
             }
         }
     };
 
-    private void enableBloutooth() {
-
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private void enableBluetooth() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             Toast.makeText(mContext, getString(R.string.msg_bluetooth_not_available), Toast.LENGTH_LONG).show();
@@ -126,11 +120,11 @@ public class BleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_device);
         mContext = BleActivity.this;
 
-        tvConnect = findViewById(R.id.tvConnect);
-        etCommand = findViewById(R.id.etCommand);
-        btnSend = findViewById(R.id.btnSend);
-        tvSendCommand = findViewById(R.id.tvSendCommand);
-        tvReceivedData = findViewById(R.id.tvReceivedData);
+        tvConnect = findViewById(R.id.text_connect);
+        etCommand = findViewById(R.id.edit_command);
+        btnSend = findViewById(R.id.button_send);
+        tvSendCommand = findViewById(R.id.text_send_command);
+        tvReceivedData = findViewById(R.id.text_received_data);
 
         final Intent intent = getIntent();
         macAddress = intent.getStringExtra(Constants.EXTRAS_DEVICE_ADDRESS);
@@ -138,20 +132,18 @@ public class BleActivity extends AppCompatActivity {
         Intent gattServiceIntent = new Intent(mContext, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);                       //bind bluetooth service
 
+        imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                senddata();
+                if (mBluetoothLeService != null && mConnected) {
+                    if (etCommand.getText().toString().trim().length() > 0) {
+                        sendMessage(etCommand.getText().toString());
+                    }
+                }
             }
         });
-    }
-
-    private void senddata() {
-        if (mBluetoothLeService != null && mConnected) {
-            if (etCommand.getText().toString().trim().length() > 0) {
-                sendMessage(etCommand.getText().toString());
-            }
-        }
     }
 
     @Override
@@ -181,7 +173,8 @@ public class BleActivity extends AppCompatActivity {
     private void displayData(String data) {
         if (data != null) {
             Log.d(getString(R.string.Received), data);
-            tvReceivedData.setText(getString(R.string.Received) + data);
+            strReceived = data + "\n" + strReceived;
+            tvReceivedData.setText(strReceived);
         }
     }
 
@@ -190,25 +183,18 @@ public class BleActivity extends AppCompatActivity {
     // on the UI.
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
-        String uuid = null;
+        String uuid;
         String unknownServiceString = getResources().getString(R.string.unknown_service);
-        ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
 
         // Loops through available GATT Services.
         for (BluetoothGattService gattService : gattServices) {
-            HashMap<String, String> currentServiceData = new HashMap<String, String>();
             uuid = gattService.getUuid().toString();
-            currentServiceData.put(LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
-
-            currentServiceData.put(LIST_UUID, uuid);
-            gattServiceData.add(currentServiceData);
-
             // get characteristic when UUID matches RX/TX UUID
             characteristicTX = gattService.getCharacteristic(BluetoothLeService.UUID_HM_RX_TX);
             characteristicRX = gattService.getCharacteristic(BluetoothLeService.UUID_HM_RX_TX);
 
             // If the service exists for Your UUID Serial, say so.
-            if (SampleGattAttributes.lookup(uuid, unknownServiceString) == Constants.EXTRAS_YOUR_UUID) {
+            if (SampleGattAttributes.lookup(uuid, unknownServiceString).equals(Constants.EXTRAS_YOUR_UUID)) {
                 tvConnect.setText(getString(R.string.connected));
             }
         }
@@ -237,7 +223,9 @@ public class BleActivity extends AppCompatActivity {
                             characteristicTX.setValue(tx);
                             mBluetoothLeService.writeCharacteristic(characteristicTX);
                             mBluetoothLeService.setCharacteristicNotification(characteristicRX, true);
-                            tvSendCommand.setText(getString(R.string.Sent) + etCommand.getText().toString());
+                            String strCommand = getString(R.string.Sent) + "\t \t" + etCommand.getText().toString();
+                            tvSendCommand.setText(strCommand);
+                            imm.hideSoftInputFromWindow(btnSend.getWindowToken(), 0);
                         }
                     });
                 }
@@ -252,13 +240,10 @@ public class BleActivity extends AppCompatActivity {
             //phone bluetooth enable request
             case REQUEST_ENABLE_BT:
                 // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a chat session
-                } else {
-                    // User did not enable Bluetooth or an error occured
+                if (resultCode != Activity.RESULT_OK) {
+                    // User did not enable Bluetooth or an error occurred
                     showAlertBluetooth();
                 }
-                return;
         }
     }
 
@@ -296,6 +281,7 @@ public class BleActivity extends AppCompatActivity {
                     .setCancelable(false)
                     .show();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -328,6 +314,7 @@ public class BleActivity extends AppCompatActivity {
                     .setCancelable(false)
                     .show();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

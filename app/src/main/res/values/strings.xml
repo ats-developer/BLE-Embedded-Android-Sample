@@ -22,7 +22,7 @@
     <string name="bt_not_enable">Bluetooth not enabled</string>
     <string name="bt_enable_msg">Bluetooth is not enabled,\nPlease enable bluetooth</string>
     <string name="not_connected">You are not connected to a device</string>
-    <string name="title_connecting">Connecting...</string>
+    <string name="title_connecting">Connecting&#8230;</string>
     <string name="connectResult">Connect request result : </string>
     <string name="title_device_not_work">Device disconnected</string>
     <string name="msg_bluetooth_not_available">Bluetooth is not available</string>
@@ -30,6 +30,6 @@
     <string name="connect">Connect</string>
     <string name="close_device">Close Device</string>
     <string name="OK">OK</string>
-    <string name="Received">Received : </string>
-    <string name="Sent">Sent : </string>
+    <string name="Received">Received :</string>
+    <string name="Sent">Sent :</string>
 </resources>

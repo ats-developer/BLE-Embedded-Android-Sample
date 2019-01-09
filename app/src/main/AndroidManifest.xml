@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.atharvasystem.bleembeddedsample">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.atharvasystem.bleembeddedsample"
+    tools:ignore="ExtraText">
 
     //If you want your app to initiate device discovery or manipulate Bluetooth settings, you must
     also declare the BLUETOOTH_ADMIN permission.
@@ -44,7 +46,8 @@
         <service
             android:name=".Service.BluetoothLeService"
             android:enabled="true"
-            android:stopWithTask="false" />
+            android:stopWithTask="false"
+            tools:ignore="InnerclassSeparator" />
     </application>
 
 </manifest>

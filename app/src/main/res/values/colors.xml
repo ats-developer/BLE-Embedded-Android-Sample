@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#3c59ff</color>
 
-    <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="divider_color">#dfdfdf</color>
+    <color name="color_White">#ffffff</color>
+    <color name="color_Black">#000000</color>
+    <color name="color_Divider">#dfdfdf</color>
 </resources>

@@ -6,25 +6,32 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvConnect"
+        android:id="@+id/text_connect"
         style="@style/textViewStyle"
         android:text="@string/title_connecting" />
 
     <EditText
-        android:id="@+id/etCommand"
-        style="@style/edittextStyle"
-        android:hint="@string/enterData" />
+        android:id="@+id/edit_command"
+        style="@style/editTextStyle"
+        android:hint="@string/enterData"
+        android:inputType="text" />
 
     <Button
-        android:id="@+id/btnSend"
+        android:id="@+id/button_send"
         style="@style/buttonStyle"
         android:text="@string/send" />
 
     <TextView
-        android:id="@+id/tvSendCommand"
-        style="@style/textViewCommandStyle" />
+        android:id="@+id/text_send_command"
+        style="@style/textViewCommandStyle"
+        android:text="@string/Sent" />
 
     <TextView
-        android:id="@+id/tvReceivedData"
-        style="@style/textViewCommandStyle" />
+        style="@style/textViewCommandStyle"
+        android:text="@string/Received" />
+
+    <TextView
+        android:id="@+id/text_received_data"
+        style="@style/textViewCommandStyle"
+        android:layout_marginStart="5dp" />
 </LinearLayout>

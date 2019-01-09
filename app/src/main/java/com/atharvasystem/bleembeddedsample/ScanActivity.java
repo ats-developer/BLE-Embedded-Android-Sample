@@ -1,6 +1,7 @@
 package com.atharvasystem.bleembeddedsample;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -13,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -40,19 +42,19 @@ import java.util.Map;
 
 
 public class ScanActivity extends AppCompatActivity {
-    TextView tvScan, tvStop;
+    private TextView tvScan, tvStop;
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
     private Handler mHandler;
-    ListView lst_devices;
+    private ListView lst_devices;
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
-    Context mContext;
+    private Context mContext;
 
-    public static final int REQUEST_ID_PERMISSIONS = 1;
+    private static final int REQUEST_ID_PERMISSIONS = 1;
     private static final int REQUEST_ENABLE_BT = 2;
-    public static final int REQUEST_SETTING = 3;
+    private static final int REQUEST_SETTING = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,27 +87,26 @@ public class ScanActivity extends AppCompatActivity {
         // Use this check to determine whether BLE is supported on the device.  Then you can
         // selectively disable BLE-related features.
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(mContext, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+            return;
         }
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
         // BluetoothAdapter through BluetoothManager.
         final BluetoothManager bluetoothManager =
                 (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+        if (bluetoothManager != null) {
+            mBluetoothAdapter = bluetoothManager.getAdapter();
+        }
 
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        } else {
+        if (mBluetoothAdapter.isEnabled()) {
             checkAndRequestPermissions();
         }
 
@@ -113,8 +114,9 @@ public class ScanActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
-                if (device == null)
+                if (device == null) {
                     return;
+                }
                 final Intent intent = new Intent(mContext, BleActivity.class);
                 intent.putExtra(Constants.EXTRAS_DEVICE_NAME, device.getName());
                 intent.putExtra(Constants.EXTRAS_DEVICE_ADDRESS, device.getAddress());
@@ -157,12 +159,13 @@ public class ScanActivity extends AppCompatActivity {
         android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(context);
         alertDialogBuilder.setTitle(context.getResources().getString(R.string.app_name));
         alertDialogBuilder.setIcon(R.mipmap.ic_launcher);
-        alertDialogBuilder.setMessage("Please allow permission for  " + strMessage.toUpperCase() + ". without this permission the app is unable to use " + strMessage.toLowerCase() + " functionality");
+        alertDialogBuilder.setMessage("Please allow permission for  " + strMessage.toUpperCase()
+                + ". without this permission the app is unable to use " + strMessage.toLowerCase()
+                + " functionality");
 
         alertDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 alertDialog.dismiss();
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -177,7 +180,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         if (requestCode == REQUEST_ID_PERMISSIONS) {
             Map<String, Integer> perms = new HashMap<>();
@@ -192,14 +195,14 @@ public class ScanActivity extends AppCompatActivity {
                     Log.d("TAG", "Location Access permission granted");
                     checkAndRequestPermissions();
                     // process the normal flow
-                    //else any one or both the permissions are not granted
+                    //else any one or more the permissions are not granted
                 } else {
                     Log.d("TAG", "Some permissions are not granted ask again ");
                     //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
                     // shouldShowRequestPermissionRationale will return true
                     //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        showDialogOK("Location Access Permission required for this app",
+                        showDialogOK(
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -215,7 +218,7 @@ public class ScanActivity extends AppCompatActivity {
                                     }
                                 });
                     }
-                    //permission is denied (and never ask again is  checked)
+                    //permission is denied (and never ask again if checked)
                     //shouldShowRequestPermissionRationale will return false
                     else {
                         Toast.makeText(mContext, "Go to settings and enable permissions", Toast.LENGTH_LONG).show();
@@ -226,9 +229,9 @@ public class ScanActivity extends AppCompatActivity {
         }
     }
 
-    private void showDialogOK(String message, DialogInterface.OnClickListener okListener) {
+    private void showDialogOK(DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(mContext)
-                .setMessage(message)
+                .setMessage("Location Access Permission required for this app")
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", okListener)
                 .create()
@@ -252,10 +255,8 @@ public class ScanActivity extends AppCompatActivity {
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.
         if (!mBluetoothAdapter.isEnabled()) {
-            if (!mBluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            }
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
         // Initializes list view adapter.
@@ -266,10 +267,11 @@ public class ScanActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // User chose not to enable Bluetooth.
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
+        // User choose to enable Bluetooth.
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
+            checkAndRequestPermissions();
+        } else {
             finish();
-            return;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -306,9 +308,9 @@ public class ScanActivity extends AppCompatActivity {
         private ArrayList<BluetoothDevice> mLeDevices;
         private LayoutInflater mInflator;
 
-        public LeDeviceListAdapter() {
+        LeDeviceListAdapter() {
             super();
-            mLeDevices = new ArrayList<BluetoothDevice>();
+            mLeDevices = new ArrayList<>();
             mInflator = ScanActivity.this.getLayoutInflater();
         }
 
@@ -341,6 +343,7 @@ public class ScanActivity extends AppCompatActivity {
             return i;
         }
 
+        @SuppressLint("InflateParams")
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             ViewHolder viewHolder;
@@ -348,9 +351,9 @@ public class ScanActivity extends AppCompatActivity {
             if (view == null) {
                 view = mInflator.inflate(R.layout.listitem_device, null);
                 viewHolder = new ViewHolder();
-                viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
-                viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
-                viewHolder.llDevice = (LinearLayout) view.findViewById(R.id.llDevice);
+                viewHolder.deviceAddress = view.findViewById(R.id.device_address);
+                viewHolder.deviceName = view.findViewById(R.id.device_name);
+                viewHolder.llDevice = view.findViewById(R.id.llDevice);
 
                 view.setTag(viewHolder);
             } else {
@@ -360,10 +363,11 @@ public class ScanActivity extends AppCompatActivity {
             BluetoothDevice device = mLeDevices.get(i);
             final String deviceName = device.getName();
             final String deviceAddress = device.getAddress();
-            if (deviceName != null && deviceName.length() > 0)
+            if (deviceName != null && deviceName.length() > 0) {
                 viewHolder.deviceName.setText(deviceName);
-            else
+            } else {
                 viewHolder.deviceName.setText(R.string.unknown_device);
+            }
             viewHolder.deviceAddress.setText(deviceAddress);
 
             return view;
