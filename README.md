@@ -15,7 +15,7 @@ This sample shows a list of available Bluetooth LE devices and provides an inter
 It creates a Service for managing connection and data communication with a GATT server hosted on a given Bluetooth LE device.
 The Activities communicate with the Service, which in turn interacts with the Bluetooth LE API.
 
-# Screenshot
+# Screenshots
 
 <p align="center">
   <img src="Screenshots/BLE-Embedded(IOT)_1.png"  width="200" title="hover text">
