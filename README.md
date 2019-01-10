@@ -16,9 +16,9 @@ It creates a Service for managing connection and data communication with a GATT 
 The Activities communicate with the Service, which in turn interacts with the Bluetooth LE API.
 
 # Screenshot
-<img src=“Screenshot/BLE-Embedded(IOT)_1.png” height=“400" alt=“Screenshot”/>
-<img src=“Screenshot/BLE-Embedded(IOT)_2.png” height=“400” alt=“Screenshot”/> 
-<img src=“Screenshot/BLE-Embedded(IOT).gif” height=“400” alt=“Screenshot”/> 
+<img src=“https://github.com/ats-developer/BLE-Embedded-Android-Sample/blob/master/Screenshot/BLE-Embedded(IOT)_1.png” height=“400" alt=“Screenshot”/>
+<img src=“https://github.com/ats-developer/BLE-Embedded-Android-Sample/blob/master/Screenshot/BLE-Embedded(IOT)_2.png” height=“400” alt=“Screenshot”/> 
+<img src=“https://github.com/ats-developer/BLE-Embedded-Android-Sample/blob/master/Screenshot/BLE-Embedded(IOT).gif” height=“400” alt=“Screenshot”/> 
 
 # Getting Started 
 This sample uses the Gradle build system. To build this project, use the "gradlew build" command or use "Import Project" in Android Studio.
